@@ -16,7 +16,7 @@ DEFAULT_KI_CONTROLADOR_PID = 0.001   # Ganancia Integral (Ki). Elimina el error 
 DEFAULT_KD_CONTROLADOR_PID = 5.0    # Ganancia Derivativa (Kd). Reacciona a la velocidad de cambio del error, ayuda a amortiguar oscilaciones y reducir sobreimpulso.
 
 # 3. Parámetros de la Simulación
-DEFAULT_DELTA_T = 1.0          # Paso de una unidad de tiempo de la simulación en segundos. Ya no es configurable desde la UI.
+DEFAULT_DELTA_T = 1.0          # Paso de una unidad de tiempo de la simulación en segundos.
 DEFAULT_DURACION_SIMULACION = 3600.0 # Duración total de la simulación en segundos (3600 segundos = 60 minutos).
 DEFAULT_SETPOINT = 180.0       # Temperatura seleccionada.
 DEFAULT_DEADBAND_THRESHOLD = 5.0 # Umbral de error en °C. El controlador solo actuará si el error es mayor que este valor.
@@ -56,7 +56,7 @@ def simular_air_fryer(theta_i, kp_c, ki_c, kd_c,
     f = np.zeros(num_pasos)                
     error = np.zeros(num_pasos)            
     p_total = np.zeros(num_pasos)          
-    effective_error_for_plotting = np.zeros(num_pasos) # Nuevo array para almacenar el error efectivo
+    effective_error_for_plotting = np.zeros(num_pasos) 
 
     theta_o[0] = AMBIENT_TEMPERATURE # Temperatura inicial de la freidora
 
@@ -72,7 +72,6 @@ def simular_air_fryer(theta_i, kp_c, ki_c, kd_c,
             effective_error = 0.0 # Si el error está dentro del umbral, se considera cero para el PID
             # integral_error se mantiene en su último valor si effective_error es 0.0 para evitar acumulación innecesaria 
             
-        # Almacenar el effective_error para graficar
         effective_error_for_plotting[i] = effective_error
             
         # La acumulación del error integral se hace solo si hay un error efectivo fuera de la deadband
@@ -123,7 +122,6 @@ entry_kp_c = None
 entry_ki_c = None
 entry_kd_c = None 
 entry_tau_s = None
-# Removido entry_delta_t de la inicialización de variables de entrada, ya no es un parámetro de la UI.
 entry_duracion = None
 entry_perturbaciones = None
 entry_deadband_threshold = None 
@@ -144,7 +142,7 @@ def run_simulation_and_plot():
         kd_c = float(entry_kd_c.get()) 
         tau_s = float(entry_tau_s.get())
         duracion = float(entry_duracion.get())
-        deadband_threshold = float(entry_deadband_threshold.get()) # Obtiene el valor del umbral desde la UI
+        deadband_threshold = float(entry_deadband_threshold.get()) 
 
         perturbaciones_str = entry_perturbaciones.get().strip()
         perturbaciones_list = []
@@ -165,7 +163,6 @@ def run_simulation_and_plot():
         parsed_perturbations_for_plotting = perturbaciones_list
         
         # 2. Ejecutar la simulación con los parámetros de la UI
-        # Recibe el nuevo array effective_error_for_plotting
         tiempo, theta_o, theta_controlador, f, error, p_total, effective_error_for_plotting = simular_air_fryer(
             theta_i=setpoint,
             kp_c=kp_c, 
@@ -216,7 +213,6 @@ def run_simulation_and_plot():
         ax2.set_title('Salida del controlador, señal de error y realimentación', fontdict={'fontsize': 14, 'fontweight': 'bold'})
         ax2.set_xlabel('Tiempo (segundos)', fontdict={'fontsize': 12})
         ax2.set_ylabel('Valor', fontdict={'fontsize': 12}) 
-        # MODIFICADO: Posición de la leyenda a 'lower right'
         ax2.legend(loc='lower right')
         ax2.grid(True)
         ax2.set_ylim(0, 300) 
@@ -256,7 +252,6 @@ if __name__ == "__main__":
 
     root.bind("<Return>", lambda event: run_simulation_and_plot())
 
-    # --- Header Frame (Encabezado) ---
     header_frame = ctk.CTkFrame(root, corner_radius=0)
     header_frame.pack(side="top", fill="x", pady=(0, 10))
 
@@ -320,7 +315,6 @@ if __name__ == "__main__":
     control_frame.grid_columnconfigure((0, 2), weight=0) 
     control_frame.grid_columnconfigure((1, 3), weight=1) 
 
-    # --- Frame para el Botón (Centrado) ---
     button_frame = ctk.CTkFrame(root, fg_color="transparent") 
     button_frame.pack(pady=10, fill="x", expand=False) 
 
@@ -328,7 +322,6 @@ if __name__ == "__main__":
     sim_button.pack(pady=5, anchor="center") 
 
 
-    # --- Configuración de los Gráficos de Matplotlib ---
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 7)) 
     
     canvas = FigureCanvasTkAgg(fig, master=root)
